@@ -1,24 +1,40 @@
-# 🚌 WhatsApp Bus Tracker Bot  
+# 🚌 WhatsApp Bus Tracker Bot
 
-A **WhatsApp bot** built with **Node.js** and **Baileys** that allows users to track and update bus locations in real-time—without needing a dedicated app or GPS integration.  
+A **WhatsApp bot** that allows users to check and update a **bus location**, subscribe to real-time location updates, and receive alerts via WhatsApp messages. Built using **Node.js, TypeScript, Prisma, and Baileys** with clean architecture and **SOLID principles**.
 
-## ✨ Features
-✅ **Get real-time location** – Users can ask *"Where is the bus?"* and get the latest update.  
-✅ **Update the location** – Anyone can send *"Bus at [location]"* to update the location.  
-✅ **Easy setup** – Runs with a simple Node.js script using WhatsApp Web authentication.  
+## 🚀 Features
 
-## 🚀 How It Works
-1. Users send `Where is the bus?` → Bot responds with the last known location.  
-2. Users send `Bus at [location]` → Bot updates the location and confirms.  
-3. Stores location updates temporarily (future improvement: database storage).  
+✅ **Check real-time bus location** via WhatsApp  
+✅ **Update bus location** by sending a live location  
+✅ **Subscribe to bus location alerts** and get updates when the bus moves  
+✅ **Command-based system** with a simple menu  
 
-## 🛠 Tech Stack
-- **Node.js**
-- **Baileys (WhatsApp Web API)**
-- **Pino (Logging)**  
+## 🛠️ Technologies Used
 
-## 📦 Installation
-1. Clone this repository:
-   ```sh
-   git clone https://github.com/DaliGabriel/whatsapp-bus-tracker.git
-   cd whatsapp-bus-tracker
+- **Node.js** - Backend runtime
+- **TypeScript** - Type safety and maintainability
+- **Baileys** (`@whiskeysockets/baileys`) - WhatsApp Web API
+- **Prisma** - ORM for database operations
+- **PostgreSQL** - Database for storing locations and subscribers
+- **Docker** (Planned) - Containerized deployment
+- **SOLID Principles & Clean Code** - To ensure modularity and maintainability
+
+---
+
+## 📦 Project Structure
+
+```plaintext
+📦 whatsapp-bus-tracker
+ ┣ 📂 bot/
+ ┃ ┣ 📜 BotService.ts   # Initializes the bot and handles connection
+ ┃ ┣ 📜 MessageHandler.ts # Handles incoming WhatsApp messages
+ ┃ ┣ 📜 CommandProcessor.ts # Processes user commands
+ ┃ ┣ 📜 LocationHandler.ts # Manages location updates & subscriptions
+ ┣ 📂 db/
+ ┃ ┣ 📜 index.ts # Prisma database operations
+ ┣ 📜 Dockerfile (Planned)
+ ┣ 📜 .env.example # Environment variables (example)
+ ┣ 📜 README.md # Documentation
+ ┣ 📜 package.json
+ ┣ 📜 tsconfig.json
+ ┗ 📜 index.ts # Entry point
