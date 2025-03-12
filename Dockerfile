@@ -1,10 +1,6 @@
 # Use official Node.js LTS image
 FROM node:20
 
-#Set build argument for database URL
-ARG DATABASE_URL
-ENV DATABASE_URL = ${DATABASE_URL}
-
 # Set the working directory inside the container
 WORKDIR /app
 
@@ -20,7 +16,11 @@ COPY . .
 # Ensure Prisma is installed
 RUN npx prisma generate
 
+# Run database migration in production
+RUN npx prisma migrate deploy
 
+# Ensure TypeScript is installed globally (optional if installed locally)
+RUN npm install -g typescript
 
 # Compile TypeScript to JavaScript
 RUN npm run build

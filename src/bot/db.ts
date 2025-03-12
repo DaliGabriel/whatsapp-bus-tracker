@@ -25,4 +25,14 @@ export const db = {
       create: { id: "1", location },
     });
   },
+  async subscribeUser(chatId: string) {
+    return await prisma.subscription.upsert({
+      where: { chatId },
+      update: {},
+      create: { chatId },
+    });
+  },
+  async getSubscribedUsers() {
+    return await prisma.subscription.findMany();
+  },
 };

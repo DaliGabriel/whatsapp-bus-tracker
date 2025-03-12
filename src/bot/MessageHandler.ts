@@ -1,11 +1,16 @@
 import { WASocket } from "@whiskeysockets/baileys";
-import { db } from "./db";
+import { CommandProcessor } from "./CommandProcessor";
+import { LocationHandler } from "./LocationHandler";
 
 export class MessageHandler {
   private sock: WASocket;
+  private commandProcessor: CommandProcessor;
+  private locationHandler: LocationHandler;
 
   constructor(sock: WASocket) {
     this.sock = sock;
+    this.commandProcessor = new CommandProcessor(sock);
+    this.locationHandler = new LocationHandler(sock);
     this.setupListeners();
   }
 
@@ -14,33 +19,19 @@ export class MessageHandler {
       const msg = messages[0];
       if (!msg.key.fromMe && msg.message && msg.key.remoteJid) {
         const chatId = msg.key.remoteJid;
-        const text = msg.message.conversation;
+        const text = msg.message.conversation?.toLowerCase().trim();
 
-        if (text && chatId) {
-          await db.saveMessage(chatId, text);
+        if (text) {
+          this.commandProcessor.processCommand(chatId, text);
         }
 
-        if (text?.toLowerCase() === "where is the bus?") {
-          const lastLocation = await db.getLastBusLocation();
-          await this.sendMessage(
+        if (msg.message.locationMessage) {
+          this.locationHandler.handleLocationUpdate(
             chatId,
-            `🚌 The bus is at: ${lastLocation?.location || "Unknown"}`
-          );
-        }
-
-        if (text?.toLowerCase().startsWith("bus at ")) {
-          const location = text.replace("bus at ", "");
-          await db.updateBusLocation(location);
-          await this.sendMessage(
-            chatId,
-            `✅ Location updated! The bus is now at: ${location}`
+            msg.message.locationMessage
           );
         }
       }
     });
-  }
-
-  private async sendMessage(chatId: string, text: string) {
-    await this.sock.sendMessage(chatId, { text });
   }
 }

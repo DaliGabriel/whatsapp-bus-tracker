@@ -25,3 +25,9 @@ model BusLocation {
   location  String
   updatedAt DateTime @updatedAt
 }
+
+model Subscription {
+  id        String   @id @default(uuid())
+  chatId    String   @unique
+  createdAt DateTime @default(now())
+}
