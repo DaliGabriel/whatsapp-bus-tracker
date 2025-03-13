@@ -25,6 +25,12 @@ export const db = {
       create: { id: "1", location },
     });
   },
+  async isUserSubscribed(chatId: string): Promise<boolean> {
+    const subscription = await prisma.subscription.findUnique({
+      where: { chatId },
+    });
+    return !!subscription; // Returns true if subscription exists, false otherwise
+  },
   async subscribeUser(chatId: string) {
     return await prisma.subscription.upsert({
       where: { chatId },
