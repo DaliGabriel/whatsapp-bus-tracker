@@ -4,6 +4,7 @@ import makeWASocket, {
   WASocket,
 } from "@whiskeysockets/baileys";
 import { logger } from "./constants";
+import * as qrcode from "qrcode-terminal"; // Ensure QR code module is properly imported
 
 export class BotService {
   private sock: WASocket | null = null;
@@ -14,7 +15,7 @@ export class BotService {
 
   async initialize(): Promise<WASocket> {
     const { state, saveCreds } = await useMultiFileAuthState(
-      "auth_info_baileys"
+      "/app/auth_info_baileys" // Ensure auth state is persistent
     );
     this.state = state;
     this.saveCreds = saveCreds;
@@ -23,8 +24,9 @@ export class BotService {
     this.sock = makeWASocket({
       version,
       auth: this.state,
-      printQRInTerminal: false,
+      printQRInTerminal: true, // ✅ ENABLE QR CODE DISPLAY
       logger: logger,
+      browser: ["WhatsApp Bot", "Chrome", "1.0"], // ✅ AVOID WHATSAPP SECURITY ISSUES
     });
 
     this.setupEventListeners();
@@ -36,21 +38,37 @@ export class BotService {
 
     this.sock.ev.on("creds.update", this.saveCreds);
 
-    this.sock.ev.on("connection.update", ({ connection, qr }) => {
-      if (qr) {
-        logger.debug("Connection update received:", { connection, qr });
-        //*qrcode should init on this way
-        let qrcode = require("qrcode-terminal");
-        qrcode.generate(qr, { small: true });
+    this.sock.ev.on(
+      "connection.update",
+      ({ connection, lastDisconnect, qr }) => {
+        if (qr) {
+          logger.debug("Connection update received:", { connection, qr });
+          qrcode.generate(qr, { small: true }); // ✅ SHOW QR CODE IN TERMINAL
+        }
+
+        if (connection === "open") {
+          console.log("✅ Bot is connected!");
+        }
+
+        if (connection === "close") {
+          const shouldReconnect = lastDisconnect?.error; // ✅ Prevent loop if session is invalid
+
+          console.log(
+            "❌ Disconnected. Reason:",
+            lastDisconnect?.error || "Unknown"
+          );
+
+          if (shouldReconnect) {
+            console.log("🔄 Reconnecting...");
+            this.initialize();
+          } else {
+            console.error(
+              "🚨 SESSION EXPIRED: You need to scan the QR code again."
+            );
+          }
+        }
       }
-      if (connection === "open") {
-        console.log("✅ Bot is connected!");
-      }
-      if (connection === "close") {
-        console.log("❌ Disconnected. Reconnecting...");
-        this.initialize();
-      }
-    });
+    );
   }
 
   getSocket(): WASocket | null {
