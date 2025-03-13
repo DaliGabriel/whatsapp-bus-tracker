@@ -14,17 +14,21 @@ export class CommandProcessor {
         await this.sendMenu(chatId);
         break;
       case "1":
-        this.getLastLocation(chatId);
+        await this.getLastLocation(chatId);
         break;
       case "2":
-        this.subscribeToBusAlerts(chatId);
+        await this.subscribeToBusAlerts(chatId);
         break;
       case "3":
-        this.getSupport(chatId);
+        await this.getSupport(chatId);
         break;
       default:
-        this.unknowMessage(chatId);
+        await this.unknowMessage(chatId);
     }
+  }
+
+  private async sendMessage(chatId: string, text: string) {
+    await this.sock.sendMessage(chatId, { text });
   }
 
   private async sendMenu(chatId: string) {
@@ -34,10 +38,6 @@ export class CommandProcessor {
   3️⃣ Get Support  
   📍 To update the bus location, share your live location!`;
     await this.sendMessage(chatId, menuMessage);
-  }
-
-  private async sendMessage(chatId: string, text: string) {
-    await this.sock.sendMessage(chatId, { text });
   }
 
   private async getLastLocation(chatId: string) {

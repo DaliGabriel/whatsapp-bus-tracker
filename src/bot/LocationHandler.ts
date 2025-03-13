@@ -25,7 +25,7 @@ export class LocationHandler {
     location: string,
     senderChatId: string
   ) {
-    const subscribers = await db.getSubscribedUsers();
+    const subscribers = (await db.getSubscribedUsers()) || [];
     for (const subscriber of subscribers) {
       if (senderChatId !== subscriber.chatId) {
         await this.sendMessage(
