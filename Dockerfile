@@ -23,6 +23,9 @@ WORKDIR /app
 #ensure the auth folder persists across restarts
 VOLUME /app/auth_info_baileys
 
+#Install PM2 globally
+RUN npm install -g pm2
+
 # Copy package files and install only production dependencies
 COPY package*.json ./
 RUN npm install
@@ -41,4 +44,4 @@ RUN npx prisma generate
 # ENV DATABASE_URL="postgresql://user:password@host:port/dbname"
 
 # Run the application
-CMD ["node", "dist/index.js"]
+CMD ["pm2-runtime", "start" ,"dist/index.js", "--name", "bus-tracker"]

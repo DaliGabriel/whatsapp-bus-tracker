@@ -38,3 +38,40 @@ A **WhatsApp bot** that allows users to check and update a **bus location**, sub
  ┣ 📜 package.json
  ┣ 📜 tsconfig.json
  ┗ 📜 index.ts # Entry point
+ ```
+
+ ## 🐳 Docker Instructions
+
+1.  **Build the Docker Image:**
+
+    Navigate to the project's root directory (where the `Dockerfile` is located) and run the following command to build the Docker image:
+
+    ```bash
+    docker build -t whatsapp-bus-tracker .
+    ```
+
+    This command will build a Docker image named `whatsapp-bus-tracker` using the instructions in your `Dockerfile`.
+
+2.  **Run the Docker Container:**
+
+    To run the Docker container, use the following command. **Important:** You'll need to provide the necessary environment variables, particularly the `DATABASE_URL` for your PostgreSQL database.
+
+    ```bash
+    docker run -d --name whatsapp-bot \
+        -e DATABASE_URL="postgresql://user:password@host:port/dbname" \
+        -v whatsapp-bot-data:/app/auth_info_baileys \
+        --restart unless-stopped \
+        whatsapp-bus-tracker
+    ```
+
+3.  **Environment Variables:**
+
+    Ensure you replace the placeholder values in the `DATABASE_URL` with your actual database credentials. You may need to add other environment variables as required by your application.
+
+4. **Checking logs:**
+
+    To check the docker logs, use the following command:
+
+    ```bash
+    docker logs whatsapp-bot
+    ```
